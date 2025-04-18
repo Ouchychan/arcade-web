@@ -109,3 +109,24 @@ body {
     83% { border-color: indigo; }
     100% { border-color: violet; }
   }
+
+  /* playpage css  */
+  .game-card {
+    background: linear-gradient(135deg, #f06292, #ba68c8);
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 20px;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .game-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+  }
+  
+  .game-card .card-title,
+  .game-card .card-text {
+    color: #fff;
+  }
+  
