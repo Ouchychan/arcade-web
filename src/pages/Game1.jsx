@@ -129,6 +129,14 @@ export default function Game1() {
       <div className="container py-4" style={{ backgroundColor: "#48A9A6" }}>
         <h2 className="text-center">Quiz Game</h2>
 
+        <p className="text-light text-center fs-6 mt-3 mb-4">
+          🎮 Welcome to the Quiz Game! <br />
+          Choose the number of questions you want to answer <br />
+          Pick a category, difficulty, and question type (optional) <br />
+          Click <strong>Start Quiz</strong> to begin <br />
+          Try to answer as many correctly as you can. Good luck!
+        </p>
+
         <div className="d-flex justify-content-center">
           <div
             className="card bg-dark text-warning p-4"
@@ -196,25 +204,6 @@ export default function Game1() {
               </Form>
             </div>
           </div>
-
-          {questions.length > 0 &&
-            !showQuiz &&
-            !showGameOver &&
-            countdown === null && (
-              <>
-                <h3>Questions:</h3>
-                <ol>
-                  {questions.map((q, idx) => (
-                    <li key={idx}>
-                      <div dangerouslySetInnerHTML={{ __html: q.question }} />
-                      <p>
-                        <strong>Answer:</strong> {q.correct_answer}
-                      </p>
-                    </li>
-                  ))}
-                </ol>
-              </>
-            )}
         </div>
 
         {/* Quiz Modal */}

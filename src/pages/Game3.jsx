@@ -107,12 +107,37 @@ export default function Game3() {
   return (
     <div style={{ display: "flex", backgroundColor: "#BFBC95" }}>
       <Sidebar />
-      <div style={{ marginLeft: "20px", padding: "20px", flex: 1 }}>
+      <div
+        style={{
+          marginLeft: "20px",
+          padding: "20px",
+          flex: 1,
+          textAlign: "center",
+        }}
+      >
         <div
           className="d-flex flex-column justify-content-center align-items-center"
           style={{ height: "100%" }}
         >
           <h2 className="text-black fw-bold text-center mb-4">Word Scramble</h2>
+
+          <p
+            className="text-dark mb-4"
+            style={{ maxWidth: "500px", fontSize: "1rem" }}
+          >
+            🕹️ Welcome to Scramble!
+            <br />
+            A random word will be selected and scrambled
+            <br />
+            Guess the word by unscrambling the letters
+            <br />
+            You may keep attempting, or <strong>skip</strong> if stuck
+            <br />
+            Try your best to win as much in <strong>one</strong> minute
+            <br />
+            Good luck and have fun!
+          </p>
+
           <Button
             className="rainbow-button fs-4 px-5 py-3"
             onClick={handleStartGame}
@@ -125,6 +150,7 @@ export default function Game3() {
         <Modal
           show={showGameModal}
           centered
+          backdrop="static"
           onHide={() => setShowGameModal(false)}
           contentClassName="text-center"
           style={{ backgroundColor: "#BFBC95" }}

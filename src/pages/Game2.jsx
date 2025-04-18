@@ -137,6 +137,26 @@ export default function Game2() {
           }}
         >
           <h2 className="text-white">Hangman Game</h2>
+
+          <p
+            className="text-light mb-4"
+            style={{ maxWidth: "500px", fontSize: "1rem" }}
+          >
+            🕹️ Welcome to Hangman!
+            <br />
+            A random word will be selected
+            <br />
+            Guess the word one letter at a time
+            <br />
+            You only have <strong>seven</strong> attempts
+            <br />
+            You lose if you're out of attempts!
+            <br />
+            Try your best to win as much in <strong>two</strong> minutes
+            <br />
+            Good luck and have fun!
+          </p>
+
           <Button
             variant="outline-dark"
             onClick={handleStartGame}
