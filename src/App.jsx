@@ -1,3 +1,5 @@
+import { AuthProvider } from './utils/AuthContext';
+import './styles/App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -7,7 +9,7 @@ import ProfilePage from './pages/ProfilePage';
 import Game1 from './pages/Game1';
 import Game2 from './pages/Game2';
 import Game3 from './pages/Game3';
-import { AuthProvider } from './utils/AuthContext';
+
 
 function App() {
   return (

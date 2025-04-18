@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Button } from 'react-bootstrap';
-import Sidebar from '../components/Sidebar';
+import React, { useState, useEffect, useRef } from "react";
+import { Modal, Button } from "react-bootstrap";
+import Sidebar from "../components/Sidebar";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 export default function Game2() {
-  const [word, setWord] = useState('');
+  const [word, setWord] = useState("");
   const [guessedLetters, setGuessedLetters] = useState([]);
   const [attemptsLeft, setAttemptsLeft] = useState(7);
   const [gameOver, setGameOver] = useState(false);
@@ -44,10 +46,10 @@ export default function Game2() {
 
   const startNewRound = async () => {
     try {
-      const res = await fetch('https://random-word-api.herokuapp.com/word?length=5');
+      const res = await fetch("https://random-word-api.vercel.app/api?words=1");
       const data = await res.json();
       const randomWord = data[0].toLowerCase();
-      console.log('Word:', randomWord);
+      console.log("Word:", randomWord);
 
       setWord(randomWord);
       setGuessedLetters([]);
@@ -56,8 +58,8 @@ export default function Game2() {
       setWon(false);
       setShowGameModal(true);
     } catch (err) {
-      console.error('Failed to fetch word:', err);
-      alert('Failed to load word. Please try again.');
+      console.error("Failed to fetch word:", err);
+      alert("Failed to load word. Please try again.");
     }
   };
 
@@ -71,7 +73,7 @@ export default function Game2() {
     const newAttempts = isCorrect ? attemptsLeft : attemptsLeft - 1;
     setAttemptsLeft(newAttempts);
 
-    const hasWon = word.split('').every((l) => newGuessedLetters.includes(l));
+    const hasWon = word.split("").every((l) => newGuessedLetters.includes(l));
     if (hasWon) {
       setWon(true);
       setGameOver(true);
@@ -97,51 +99,144 @@ export default function Game2() {
   };
 
   const renderWord = () => {
-    return word.split('').map((letter, index) => (
-      <span key={index} style={{ margin: '0 5px', fontSize: '24px' }}>
-        {guessedLetters.includes(letter) ? letter : '_'}
+    return word.split("").map((letter, index) => (
+      <span key={index} style={{ margin: "0 5px", fontSize: "24px" }}>
+        {guessedLetters.includes(letter) ? letter : "_"}
       </span>
     ));
   };
 
+  const rainbowColors = [
+    "#FF0000", // Red
+    "#FF7F00", // Orange
+    "#FFFF00", // Yellow
+    "#00FF00", // Green
+    "#0000FF", // Blue
+    "#4B0082", // Indigo
+    "#8B00FF", // Violet
+  ];
   return (
-    <div style={{ display: 'flex' }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        width: "100%",
+      }}
+    >
       <Sidebar />
-      <div style={{ padding: '20px' }}>
-        <h2>Hangman Game</h2>
-        <Button variant="primary" onClick={handleStartGame}>
-          Start Game
-        </Button>
+      <div style={{ padding: "20px", flex: 1, backgroundColor: "#000" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh", // Full height of the viewport
+            flexDirection: "column",
+            textAlign: "center",
+            padding: "20px",
+          }}
+        >
+          <h2 className="text-white">Hangman Game</h2>
+          <Button
+            variant="outline-dark"
+            onClick={handleStartGame}
+            className="rainbow-button"
+            style={{
+              fontSize: "1.5rem", // Increase font size
+              padding: "12px 24px", // Increase padding to make the button larger
+              minWidth: "200px", // Optional: Ensure button is wider
+            }}
+          >
+            Start Game
+          </Button>
+        </div>
 
         {/* Game Modal */}
-        <Modal show={showGameModal} centered backdrop="static" keyboard={false}>
+        <Modal
+          show={showGameModal}
+          centered
+          backdrop="static"
+          keyboard={false}
+          contentClassName="bg-dark text-light rainbow-modal"
+          style={{ backgroundColor: "black" }}
+        >
           <Modal.Header>
             <Modal.Title>Hangman Challenge</Modal.Title>
           </Modal.Header>
-          <Modal.Body className="text-center">
-            <div className="mb-3">
-              <strong>🕒 Time Left:</strong> {timeLeft}s &nbsp;|&nbsp;
-              <strong>🔁 Rounds:</strong> {rounds}
+          <Modal.Body className="d-flex flex-column justify-content-between text-white bg-dark">
+            {/* Top: Timer + Rounds */}
+            <div className="text-center">
+              <div className="mb-2">
+                <strong>🔁 Rounds:</strong> {rounds}
+              </div>
+              <div style={{ width: 80, height: 80, margin: "0 auto" }}>
+                <CircularProgressbar
+                  value={timeLeft}
+                  maxValue={120}
+                  text={`${timeLeft}s`}
+                  styles={buildStyles({
+                    textColor: "#fff",
+                    pathColor: "#ffc107",
+                    trailColor: "#333",
+                    textSize: "20px",
+                  })}
+                />
+              </div>
             </div>
-            <h4>Word: {renderWord()}</h4>
-            <h5>Attempts Left: {attemptsLeft}</h5>
-            <div style={{ margin: '10px 0' }}>
-              {Array.from('abcdefghijklmnopqrstuvwxyz').map((letter) => (
-                <Button
-                  key={letter}
-                  variant="outline-primary"
-                  className="m-1"
-                  onClick={() => handleGuess(letter)}
-                  disabled={guessedLetters.includes(letter)}
-                >
-                  {letter}
-                </Button>
-              ))}
+
+            {/* Bottom: Word + Attempts */}
+            <div className="text-center mb-2">
+              <h4 style={{ letterSpacing: "8px" }}>{renderWord()}</h4>
+              <h5>Attempts Left: {attemptsLeft}</h5>
             </div>
+
+            <div
+              style={{
+                margin: "10px 0",
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+              }}
+            >
+              {Array.from("abcdefghijklmnopqrstuvwxyz").map((letter) => {
+                const color =
+                  rainbowColors[
+                    Math.floor(Math.random() * rainbowColors.length)
+                  ];
+                const isGuessed = guessedLetters.includes(letter);
+                return (
+                  <Button
+                    key={letter}
+                    variant="dark"
+                    className="m-1 letter-button"
+                    onClick={() => handleGuess(letter)}
+                    disabled={isGuessed}
+                    style={{
+                      borderColor: isGuessed ? "#ccc" : color,
+                      borderWidth: "2px",
+                      backgroundColor: isGuessed ? "#fff" : "#000",
+                      color: isGuessed ? "#000" : "#fff",
+                      cursor: isGuessed ? "not-allowed" : "pointer",
+                      transition: "all 0.2s ease",
+                    }}
+                  >
+                    {letter}
+                  </Button>
+                );
+              })}
+            </div>
+
             {gameOver && (
-              <div className="mt-3">
-                <h5>{won ? '🎉 You guessed it!' : `❌ You lost. The word was "${word}"`}</h5>
-                <Button variant="success" onClick={handleNextRound}>
+              <div className="mt-3 text-center">
+                <h5>
+                  {won
+                    ? "🎉 You guessed it!"
+                    : `❌ You lost. The word was "${word}"`}
+                </h5>
+                <Button
+                  onClick={handleNextRound}
+                  className="rainbow-button mt-2"
+                >
                   Next Word
                 </Button>
               </div>
@@ -150,16 +245,31 @@ export default function Game2() {
         </Modal>
 
         {/* Summary Modal */}
-        <Modal show={showSummaryModal} centered onHide={() => setShowSummaryModal(false)}>
+        <Modal
+          show={showSummaryModal}
+          centered
+          onHide={() => setShowSummaryModal(false)}
+          contentClassName="bg-dark text-light rainbow-modal"
+          style={{ backgroundColor: "black" }}
+        >
           <Modal.Header closeButton>
             <Modal.Title>Game Summary</Modal.Title>
           </Modal.Header>
           <Modal.Body className="text-center">
-            <p>🕒 Time's up!</p>
-            <p>✅ Correct Words: {score}</p>
-            <p>❌ Incorrect Words: {rounds - score}</p>
-            <p>🔁 Total Rounds: {rounds}</p>
-            <Button variant="primary" onClick={() => setShowSummaryModal(false)}>
+            <p className="fs-4">🕒 Time's up!</p>
+            <p>
+              ✅ Correct Words: <strong>{score}</strong>
+            </p>
+            <p>
+              ❌ Incorrect Words: <strong>{rounds - score}</strong>
+            </p>
+            <p>
+              🔁 Total Rounds: <strong>{rounds}</strong>
+            </p>
+            <Button
+              onClick={() => setShowSummaryModal(false)}
+              className="rainbow-button mt-3"
+            >
               Close
             </Button>
           </Modal.Body>
