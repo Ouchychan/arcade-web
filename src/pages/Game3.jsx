@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import { Button, Form, Modal } from "react-bootstrap";
+import { useAuth } from "../utils/AuthContext";
 
 export default function Game3() {
   const [word, setWord] = useState("");
@@ -16,6 +17,10 @@ export default function Game3() {
 
   const [score, setScore] = useState(0);
   const [questionsAnswered, setQuestionsAnswered] = useState(0);
+  const scoreRef = useRef(score);
+  const questionsRef = useRef(questionsAnswered);
+
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     if (showGameModal) {
@@ -23,8 +28,20 @@ export default function Game3() {
       fetchWord();
     }
 
+    if (showSummaryModal) {
+      saveScrambleScore();
+    }
+
     return () => clearInterval(timerRef.current);
-  }, [showGameModal]);
+  }, [showGameModal, showSummaryModal]);
+
+  useEffect(() => {
+    scoreRef.current = score;
+  }, [score]);
+
+  useEffect(() => {
+    questionsRef.current = questionsAnswered;
+  }, [questionsAnswered]);
 
   // Timer logic
   const startTimer = () => {
@@ -44,6 +61,31 @@ export default function Game3() {
         return prev - 1;
       });
     }, 1000);
+  };
+
+  const saveScrambleScore = async () => {
+    if (!currentUser?.email) return;
+
+    try {
+      const res = await fetch(
+        "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/scramble_scores",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: currentUser.email,
+            total_questions: questionsRef.current,
+            corrected_questions: scoreRef.current,
+          }),
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      console.log("✅ Scramble score saved:", data);
+    } catch (err) {
+      console.error("❌ Failed to save scramble score:", err.message);
+    }
   };
 
   const fetchWord = async () => {

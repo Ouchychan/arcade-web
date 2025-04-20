@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import { Modal, Button, Form } from "react-bootstrap";
 import "../styles/App.css";
 import ProgressBar from "react-bootstrap/ProgressBar";
+import { useAuth } from "../utils/AuthContext";
 
 export default function Game1() {
   const [amount, setAmount] = useState(10);
@@ -20,6 +21,8 @@ export default function Game1() {
   const [questions, setQuestions] = useState([]);
   const [error, setError] = useState(null);
 
+  const { currentUser } = useAuth();
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -27,12 +30,44 @@ export default function Game1() {
         const data = await res.json();
         setCategories(data.trivia_categories);
       } catch (err) {
-        console.error("Failed to fetch categories:", err);
+        console.error("❌ Failed to fetch categories:", err);
       }
     };
 
     fetchCategories();
-  }, []);
+
+    if (showGameOver && currentUser) {
+      const saveScore = async () => {
+        try {
+          const selectedCat = categories.find(
+            (cat) => cat.id.toString() === category
+          );
+          const categoryName = selectedCat ? selectedCat.name : "Unknown";
+
+          await fetch(
+            "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/quiz_scores",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: currentUser.email,
+                game: "quiz",
+                score,
+                total: questions.length,
+                category: categoryName, // ✅ send category name
+                type,
+                difficulty,
+              }),
+            }
+          );
+          console.log("✅ Score saved!");
+        } catch (err) {
+          console.error("❌ Failed to save score:", err);
+        }
+      };
+      saveScore();
+    }
+  }, [showGameOver, currentUser, score, questions.length]);
 
   const fetchQuestions = async () => {
     setError(null);

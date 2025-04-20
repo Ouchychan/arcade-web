@@ -3,6 +3,7 @@ import { Modal, Button } from "react-bootstrap";
 import Sidebar from "../components/Sidebar";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { useAuth } from "../utils/AuthContext";
 
 export default function Game2() {
   const [word, setWord] = useState("");
@@ -19,17 +20,23 @@ export default function Game2() {
   const [timeLeft, setTimeLeft] = useState(120);
   const timerRef = useRef(null);
 
+  const { currentUser } = useAuth();
+
   useEffect(() => {
     if (gameStarted) {
       startNewRound();
       startTimer();
     }
+
+    if (showSummaryModal) {
+      saveScore(); // runs *after* modal is shown, ensuring latest score
+    }
     return () => clearInterval(timerRef.current);
-  }, [gameStarted]);
+  }, [gameStarted, showSummaryModal]);
 
   const startTimer = () => {
     clearInterval(timerRef.current);
-    setTimeLeft(120);
+    setTimeLeft(20);
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -42,6 +49,34 @@ export default function Game2() {
         return prev - 1;
       });
     }, 1000);
+  };
+
+  const saveScore = async () => {
+    try {
+      const response = await fetch(
+        "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/hangman_scores",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: currentUser.email,
+            game: "hangman",
+            corrected_questions: score,
+            total_questions: rounds,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save score");
+      }
+
+      console.log("Score saved successfully");
+    } catch (error) {
+      console.error("Error saving score:", error);
+    }
   };
 
   const startNewRound = async () => {
@@ -115,6 +150,7 @@ export default function Game2() {
     "#4B0082", // Indigo
     "#8B00FF", // Violet
   ];
+
   return (
     <div
       style={{
