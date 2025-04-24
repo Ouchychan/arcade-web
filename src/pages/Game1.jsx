@@ -5,6 +5,7 @@ import "../styles/App.css";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import { useAuth } from "../utils/AuthContext";
 import { toast } from "react-toastify";
+import { BsX } from "react-icons/bs";
 
 export default function Game1() {
   const [amount, setAmount] = useState(10);
@@ -247,11 +248,30 @@ export default function Game1() {
         {/* Quiz Modal */}
         <Modal
           show={showQuiz && questions.length > 0 && !showGameOver}
+          size="lg"
           centered
+          backdrop="static"
+          keyboard={false}
           contentClassName="bg-dark text-warning"
           dialogClassName="modal-dialog-centered modal-lg"
           style={{ backgroundColor: "#48A9A6" }}
         >
+          {/* Custom Exit Button */}
+          <button
+            onClick={() => {
+              const confirmExit = window.confirm(
+                "Are you sure you want to exit the quiz?"
+              );
+              if (confirmExit) {
+                setShowQuiz(false);
+              }
+            }}
+            className="btn btn-outline-warning position-absolute"
+            style={{ top: "10px", right: "10px", zIndex: 1051 }}
+          >
+            <BsX size={24} />
+          </button>
+
           <ProgressBar
             now={((currentQIndex + 1) / questions.length) * 100}
             variant="warning"

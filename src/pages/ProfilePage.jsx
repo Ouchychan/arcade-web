@@ -75,9 +75,6 @@ export default function ProfilePage() {
       <Sidebar />
       <div className="container mt-4 p-4">
         <h2 className="mb-3">Your Game Profile</h2>
-        <p className="mb-4">
-          <strong>Email:</strong> {currentUser?.email || "Unknown"}
-        </p>
 
         <div className="row">
           {/* Quiz Game Card */}
@@ -115,11 +112,12 @@ export default function ProfilePage() {
             </div>
           </div>
 
+          {/* Quiz Game History Modal */}
           <Modal
             show={showQuizModal}
             onHide={() => setShowQuizModal(false)}
             centered
-            contentClassName="text-center"
+            contentClassName="bg-dark text-light"
           >
             <Modal.Header closeButton>
               <Modal.Title>Quiz Game Details</Modal.Title>
@@ -294,7 +292,7 @@ export default function ProfilePage() {
             show={showScrambleModal}
             onHide={() => setShowScrambleModal(false)}
             centered
-            contentClassName="text-center"
+            contentClassName="bg-dark text-light"
           >
             <Modal.Header closeButton>
               <Modal.Title>Game Details</Modal.Title>

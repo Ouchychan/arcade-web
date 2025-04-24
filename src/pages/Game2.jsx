@@ -5,6 +5,7 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useAuth } from "../utils/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
+import { BsX } from "react-icons/bs";
 
 export default function Game2() {
   const [word, setWord] = useState("");
@@ -218,12 +219,37 @@ export default function Game2() {
         {/* Game Modal */}
         <Modal
           show={showGameModal}
+          size="lg"
           centered
           backdrop="static"
           keyboard={false}
           contentClassName="bg-dark text-light rainbow-modal"
           style={{ backgroundColor: "black" }}
         >
+          {/* Custom Exit Button */}
+          <button
+            onClick={() => {
+              const confirmExit = window.confirm(
+                "Are you sure you want to exit the game?"
+              );
+              if (confirmExit) {
+                clearInterval(timerRef.current);
+                setShowGameModal(false);
+                setGameStarted(false);
+              }
+            }}
+            className="btn btn-outline-light position-absolute"
+            style={{
+              top: "10px",
+              right: "10px",
+              zIndex: 1051,
+              borderRadius: "50%",
+              padding: "0.4rem 0.6rem",
+            }}
+          >
+            <BsX size={24} />
+          </button>
+
           <Modal.Header>
             <Modal.Title>Hangman Challenge</Modal.Title>
           </Modal.Header>

@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useAuth } from "../utils/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
+import { BsX } from "react-icons/bs";
 
 export default function Game3() {
   const [word, setWord] = useState("");
@@ -193,12 +194,45 @@ export default function Game3() {
         {/* Game Modal */}
         <Modal
           show={showGameModal}
+          size="xl"
           centered
           backdrop="static"
-          onHide={() => setShowGameModal(false)}
+          onHide={() => {
+            const confirmExit = window.confirm(
+              "Are you sure you want to exit the game?"
+            );
+            if (confirmExit) {
+              setShowGameModal(false);
+
+              clearInterval(timerRef.current);
+            }
+          }}
           contentClassName="text-center"
           style={{ backgroundColor: "#BFBC95" }}
         >
+          {/* Custom Exit Button */}
+          <button
+            onClick={() => {
+              const confirmExit = window.confirm(
+                "Are you sure you want to exit the game?"
+              );
+              if (confirmExit) {
+                setShowGameModal(false);
+                clearInterval(timerRef.current); // stop timer
+              }
+            }}
+            className="btn btn-outline-dark position-absolute"
+            style={{
+              top: "10px",
+              right: "10px",
+              zIndex: 1051,
+              borderRadius: "50%",
+              padding: "0.4rem 0.6rem",
+            }}
+          >
+            <BsX size={24} />
+          </button>
+
           <Modal.Header>
             <Modal.Title>Word Scramble</Modal.Title>
           </Modal.Header>
