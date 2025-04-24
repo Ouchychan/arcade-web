@@ -22,6 +22,10 @@ export default function Game1() {
 
   const [questions, setQuestions] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [isCorrectAnswer, setIsCorrectAnswer] = useState(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [shuffledChoices, setShuffledChoices] = useState([]);
 
   const { currentUser } = useAuth();
 
@@ -73,6 +77,18 @@ export default function Game1() {
     }
   }, [showGameOver, currentUser, score, questions.length]);
 
+  useEffect(() => {
+    if (questions.length === 0) return;
+
+    const currentQ = questions[currentQIndex];
+    let choices = currentQ.incorrect_answers.concat(currentQ.correct_answer);
+    if (currentQ.type === "multiple") {
+      setShuffledChoices(shuffle(choices));
+    } else {
+      setShuffledChoices(["True", "False"]);
+    }
+  }, [currentQIndex, questions]);
+
   const fetchQuestions = async () => {
     setError(null);
     setQuestions([]);
@@ -115,15 +131,29 @@ export default function Game1() {
   const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
 
   const handleAnswer = (answer) => {
-    const correct = questions[currentQIndex].correct_answer;
-    if (answer === correct) setScore((prev) => prev + 1);
+    if (isTransitioning || selectedAnswer !== null) return; // prevent double click
 
-    if (currentQIndex + 1 < questions.length) {
-      setCurrentQIndex((prev) => prev + 1);
-    } else {
-      setShowGameOver(true);
-      setShowQuiz(false);
-    }
+    const correct = questions[currentQIndex].correct_answer;
+    const isCorrect = answer === correct;
+
+    setSelectedAnswer(answer);
+    setIsCorrectAnswer(isCorrect);
+
+    if (isCorrect) setScore((prev) => prev + 1);
+
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setSelectedAnswer(null);
+      setIsCorrectAnswer(null);
+      setIsTransitioning(false);
+
+      if (currentQIndex + 1 < questions.length) {
+        setCurrentQIndex((prev) => prev + 1);
+      } else {
+        setShowGameOver(true);
+        setShowQuiz(false);
+      }
+    }, 1000); // 1 second transition delay
   };
 
   const handleRestart = () => {
@@ -145,21 +175,25 @@ export default function Game1() {
   };
 
   const renderAnswers = () => {
-    const currentQ = questions[currentQIndex];
-    let choices = currentQ.incorrect_answers.concat(currentQ.correct_answer);
-    if (currentQ.type === "multiple") choices = shuffle(choices);
-    else choices = ["True", "False"];
+    return shuffledChoices.map((choice, idx) => {
+      let borderClass = "border-warning";
+      if (selectedAnswer === choice) {
+        borderClass = isCorrectAnswer ? "border-success" : "border-danger";
+      }
 
-    return choices.map((choice, idx) => (
-      <Button
-        key={idx}
-        variant="outline-warning"
-        onClick={() => handleAnswer(choice)}
-        className="d-block my-2 w-100 text-start px-3 py-2 rounded-0"
-      >
-        {choice}
-      </Button>
-    ));
+      return (
+        <Button
+          key={idx}
+          variant="outline-warning"
+          onClick={() => handleAnswer(choice)}
+          disabled={selectedAnswer !== null}
+          className={`d-block my-2 w-100 text-start px-3 py-2 rounded-0 border-3 ${borderClass}`}
+          style={{ transition: "border 0.3s ease-in-out" }}
+        >
+          {choice}
+        </Button>
+      );
+    });
   };
 
   return (

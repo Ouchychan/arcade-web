@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import { Container, Row, Col, Card, Table } from "react-bootstrap";
+import { Container, Row, Col, Card, Table, Alert } from "react-bootstrap";
 
 export default function MainMenu() {
   const [quizScores, setQuizScores] = useState([]);
@@ -22,39 +22,24 @@ export default function MainMenu() {
           ).then((res) => res.json()),
         ]);
 
-        const formattedQuiz = quizRes
-          .map((score) => ({
-            player: score.user_email,
-            score: (score.score / score.total) * 100,
-            corrected: score.score,
-            total: score.total,
-            created_at: score.created_at,
-          }))
-          .sort((a, b) => b.score - a.score);
+        const formatScores = (data, scoreKey, totalKey) =>
+          data
+            .map((score) => ({
+              score: (score[scoreKey] / score[totalKey]) * 100,
+              corrected: score[scoreKey],
+              total: score[totalKey],
+              created_at: score.created_at,
+            }))
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 5); // Top 5
 
-        const formattedHangman = hangmanRes
-          .map((score) => ({
-            player: score.user_email,
-            score: (score.corrected_questions / score.total_questions) * 100,
-            corrected: score.corrected_questions,
-            total: score.total_questions,
-            created_at: score.created_at,
-          }))
-          .sort((a, b) => b.score - a.score);
-
-        const formattedScramble = scrambleRes
-          .map((score) => ({
-            player: score.user_email,
-            score: (score.corrected_questions / score.total_questions) * 100,
-            corrected: score.corrected_questions,
-            total: score.total_questions,
-            created_at: score.created_at,
-          }))
-          .sort((a, b) => b.score - a.score);
-
-        setQuizScores(formattedQuiz);
-        setHangmanScores(formattedHangman);
-        setScrambleScores(formattedScramble);
+        setQuizScores(formatScores(quizRes, "score", "total"));
+        setHangmanScores(
+          formatScores(hangmanRes, "corrected_questions", "total_questions")
+        );
+        setScrambleScores(
+          formatScores(scrambleRes, "corrected_questions", "total_questions")
+        );
       } catch (error) {
         console.error("Error fetching high scores:", error);
       }
@@ -66,30 +51,32 @@ export default function MainMenu() {
   const renderScoreTable = (label, scores) => (
     <div className="mb-5">
       <h4 className="mb-3">{label}</h4>
-      <Table striped bordered hover responsive>
-        <thead className="table-dark">
-          <tr>
-            <th>#</th>
-            <th>Player</th>
-            <th>Score (%)</th>
-            <th>Correct / Total</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {scores.map((score, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{score.player}</td>
-              <td>{score.score.toFixed(2)}%</td>
-              <td>
-                {score.corrected} / {score.total}
-              </td>
-              <td>{new Date(score.created_at).toLocaleDateString()}</td>
+      {scores.length === 0 ? (
+        <Alert variant="info">No records yet. Be the first to play!</Alert>
+      ) : (
+        <Table striped bordered hover responsive>
+          <thead className="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Score (%)</th>
+              <th>Correct / Total</th>
+              <th>Date</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {scores.map((score, index) => (
+              <tr key={index}>
+                <td>{index + 1}</td>
+                <td>{score.score.toFixed(2)}%</td>
+                <td>
+                  {score.corrected} / {score.total}
+                </td>
+                <td>{new Date(score.created_at).toLocaleDateString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
     </div>
   );
 

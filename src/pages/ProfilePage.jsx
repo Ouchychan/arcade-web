@@ -82,32 +82,34 @@ export default function ProfilePage() {
             <div className="card shadow-sm border-0">
               <div className="card-body">
                 <h5 className="card-title">Quiz Game</h5>
-                <table className="table table-bordered table-sm mt-3 bg-white text-dark text-center">
-                  <thead className="table-light">
-                    <tr>
-                      <th className="align-middle w-50">Score</th>
-                      <th className="align-middle w-50">Total Questions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {quizHistory
-                      .sort((a, b) => b.score - a.score)
-                      .map((entry, idx) => (
-                        <tr
-                          key={idx}
-                          onClick={() => {
-                            setSelectedQuiz(entry);
-                            setShowQuizModal(true);
-                          }}
-                          style={{ cursor: "pointer" }}
-                          className="table-row-hover"
-                        >
-                          <td className="align-middle w-50">{entry.score}</td>
-                          <td className="align-middle w-50">{entry.total}</td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
+                {quizHistory.length > 0 ? (
+                  <table className="table table-bordered table-sm mt-3 bg-white text-dark text-center table-hover">
+                    <thead className="table-light">
+                      <tr>
+                        <th className="align-middle w-50">Score</th>
+                        <th className="align-middle w-50">Total Questions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {quizHistory
+                        .sort((a, b) => b.score - a.score)
+                        .map((entry, idx) => (
+                          <tr
+                            key={idx}
+                            onClick={() => {
+                              setSelectedQuiz(entry);
+                              setShowQuizModal(true);
+                            }}
+                          >
+                            <td className="align-middle w-50">{entry.score}</td>
+                            <td className="align-middle w-50">{entry.total}</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="text-muted">No quiz game records found.</p>
+                )}
               </div>
             </div>
           </div>
@@ -149,6 +151,14 @@ export default function ProfilePage() {
                 <p>No data available.</p>
               )}
             </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => setShowHangmanModal(false)}
+              >
+                Close
+              </Button>
+            </Modal.Footer>
           </Modal>
 
           {/* Hangman Game Card */}
@@ -156,38 +166,41 @@ export default function ProfilePage() {
             <div className="card shadow-sm border-0">
               <div className="card-body">
                 <h5 className="card-title">Hangman</h5>
-                <table className="table table-bordered table-sm mt-3 bg-white text-dark text-center">
-                  <thead className="table-light">
-                    <tr>
-                      <th className="align-middle w-50">Score</th>
-                      <th className="align-middle w-50">Rounds</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {hangmanHistory
-                      .sort(
-                        (a, b) => b.corrected_questions - a.corrected_questions
-                      )
-                      .map((entry, idx) => (
-                        <tr
-                          key={idx}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => {
-                            setSelectedScore(entry);
-                            setShowHangmanModal(true);
-                          }}
-                          className="table-row-hover"
-                        >
-                          <td className="align-middle w-50">
-                            {entry.corrected_questions}
-                          </td>
-                          <td className="align-middle w-50">
-                            {entry.total_questions}
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
+                {hangmanHistory.length > 0 ? (
+                  <table className="table table-bordered table-sm mt-3 bg-white text-dark text-center table-hover">
+                    <thead className="table-light">
+                      <tr>
+                        <th className="align-middle w-50">Score</th>
+                        <th className="align-middle w-50">Rounds</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {hangmanHistory
+                        .sort(
+                          (a, b) =>
+                            b.corrected_questions - a.corrected_questions
+                        )
+                        .map((entry, idx) => (
+                          <tr
+                            key={idx}
+                            onClick={() => {
+                              setSelectedScore(entry);
+                              setShowHangmanModal(true);
+                            }}
+                          >
+                            <td className="align-middle w-50">
+                              {entry.corrected_questions}
+                            </td>
+                            <td className="align-middle w-50">
+                              {entry.total_questions}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="text-muted">No hangman game records found.</p>
+                )}
               </div>
             </div>
           </div>
@@ -228,7 +241,7 @@ export default function ProfilePage() {
                         <li key={index}>• {word}</li>
                       ))
                     ) : (
-                      <li className="text-muted">No words recorded</li>
+                      <li>No words recorded</li>
                     )}
                   </ul>
                 </>
@@ -251,38 +264,43 @@ export default function ProfilePage() {
             <div className="card shadow-sm border-0">
               <div className="card-body">
                 <h5 className="card-title">Word Scramble</h5>
-                <table className="table table-bordered table-sm mt-3 bg-white text-dark text-center">
-                  <thead className="table-light">
-                    <tr>
-                      <th className="align-middle w-50">Total Wins</th>
-                      <th className="align-middle w-50">Total Rounds</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {scrambleHistory
-                      .sort(
-                        (a, b) => b.corrected_questions - a.corrected_questions
-                      )
-                      .map((entry, idx) => (
-                        <tr
-                          key={idx}
-                          onClick={() => {
-                            setSelectedScramble(entry);
-                            setShowScrambleModal(true);
-                          }}
-                          style={{ cursor: "pointer" }}
-                          className="table-row-hover"
-                        >
-                          <td className="align-middle w-50">
-                            {entry.corrected_questions}
-                          </td>
-                          <td className="align-middle w-50">
-                            {entry.total_questions}
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
+                {scrambleHistory.length > 0 ? (
+                  <table className="table table-bordered table-sm mt-3 bg-white text-dark text-center table-hover">
+                    <thead className="table-light">
+                      <tr>
+                        <th className="align-middle w-50">Total Wins</th>
+                        <th className="align-middle w-50">Total Rounds</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {scrambleHistory
+                        .sort(
+                          (a, b) =>
+                            b.corrected_questions - a.corrected_questions
+                        )
+                        .map((entry, idx) => (
+                          <tr
+                            key={idx}
+                            onClick={() => {
+                              setSelectedScramble(entry);
+                              setShowScrambleModal(true);
+                            }}
+                          >
+                            <td className="align-middle w-50">
+                              {entry.corrected_questions}
+                            </td>
+                            <td className="align-middle w-50">
+                              {entry.total_questions}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="text-muted">
+                    No word scramble game records found.
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -301,37 +319,45 @@ export default function ProfilePage() {
               {selectedScramble ? (
                 <>
                   <p>
-                    🏆 <strong>Total Correct:</strong>{" "}
-                    {selectedScramble.corrected_questions}
+                    ✅ Correct Words:{" "}
+                    <strong>{selectedScramble.corrected_questions}</strong>
                   </p>
                   <p>
-                    🎯 <strong>Total Attempted:</strong>{" "}
-                    {selectedScramble.total_questions}
+                    ❌ Incorrect Words:{" "}
+                    <strong>
+                      {selectedScramble.total_questions -
+                        selectedScramble.corrected_questions}
+                    </strong>
                   </p>
                   <p>
-                    🗓️ <strong>Date:</strong>{" "}
-                    {new Date(selectedScramble.created_at).toLocaleString()}
+                    🔁 Total Rounds:{" "}
+                    <strong>{selectedScramble.total_questions}</strong>
                   </p>
-
-                  {selectedScramble.words &&
-                    selectedScramble.words.length > 0 && (
-                      <>
-                        <hr />
-                        <h6>Correct Words:</h6>
-                        <ul className="list-group">
-                          {selectedScramble.words.map((word, i) => (
-                            <li key={i} className="list-group-item">
-                              {word}
-                            </li>
-                          ))}
-                        </ul>
-                      </>
+                  <hr />
+                  <p className="mb-1">📝 Words You Guessed:</p>
+                  <ul className="list-unstyled text-light">
+                    {selectedScramble.words &&
+                    selectedScramble.words.length > 0 ? (
+                      selectedScramble.words.map((word, index) => (
+                        <li key={index}>• {word}</li>
+                      ))
+                    ) : (
+                      <li>No words recorded</li>
                     )}
+                  </ul>
                 </>
               ) : (
-                <p>No game data available</p>
+                <p>Loading...</p>
               )}
             </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => setShowHangmanModal(false)}
+              >
+                Close
+              </Button>
+            </Modal.Footer>
           </Modal>
         </div>
       </div>
