@@ -9,6 +9,7 @@ export default function Game3() {
   const [scrambled, setScrambled] = useState("");
   const [guess, setGuess] = useState("");
   const [loading, setLoading] = useState(true);
+  const [correctWords, setCorrectWords] = useState([]);
 
   const [showGameModal, setShowGameModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
@@ -76,6 +77,7 @@ export default function Game3() {
             email: currentUser.email,
             total_questions: questionsRef.current,
             corrected_questions: scoreRef.current,
+            words: correctWords,
           }),
         }
       );
@@ -122,6 +124,7 @@ export default function Game3() {
     if (guess.toLowerCase() === word) {
       setScore((prev) => prev + 1);
       setQuestionsAnswered((prev) => prev + 1);
+      setCorrectWords((prev) => [...prev, word]);
       toast.success("🎉 Correct! You guessed the word!");
       setTimeout(() => {
         fetchWord();
@@ -141,6 +144,7 @@ export default function Game3() {
   const handleStartGame = () => {
     setScore(0);
     setQuestionsAnswered(0);
+    setCorrectWords([]);
     setShowGameModal(true);
   };
 

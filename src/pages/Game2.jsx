@@ -15,6 +15,7 @@ export default function Game2() {
   const [gameStarted, setGameStarted] = useState(false);
   const [showGameModal, setShowGameModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [correctWords, setCorrectWords] = useState([]);
 
   const [score, setScore] = useState(0);
   const [rounds, setRounds] = useState(0);
@@ -66,6 +67,7 @@ export default function Game2() {
             game: "hangman",
             corrected_questions: score,
             total_questions: rounds,
+            words: correctWords,
           }),
         }
       );
@@ -117,6 +119,7 @@ export default function Game2() {
       setScore((prev) => prev + 1);
       setRounds((prev) => prev + 1);
       toast.success("🎉 Correct! You guessed the word!");
+      setCorrectWords((prevWords) => [...prevWords, word]);
       return;
     }
 
@@ -134,6 +137,7 @@ export default function Game2() {
   const handleStartGame = () => {
     setScore(0);
     setRounds(0);
+    setCorrectWords([]);
     setGameStarted(true);
   };
 
