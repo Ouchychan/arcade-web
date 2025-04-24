@@ -4,6 +4,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import "../styles/App.css";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import { useAuth } from "../utils/AuthContext";
+import { toast } from "react-toastify";
 
 export default function Game1() {
   const [amount, setAmount] = useState(10);
@@ -61,8 +62,10 @@ export default function Game1() {
             }
           );
           console.log("✅ Score saved!");
+          toast.success("✅ Score saved!");
         } catch (err) {
           console.error("❌ Failed to save score:", err);
+          toast.error("❌ Failed to save score.");
         }
       };
       saveScore();

@@ -4,6 +4,7 @@ import Sidebar from "../components/Sidebar";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useAuth } from "../utils/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function Game2() {
   const [word, setWord] = useState("");
@@ -73,9 +74,10 @@ export default function Game2() {
         throw new Error("Failed to save score");
       }
 
-      console.log("Score saved successfully");
+      toast.success("✅ Score saved successfully!");
     } catch (error) {
       console.error("Error saving score:", error);
+      toast.error("❌ Failed to save score");
     }
   };
 
@@ -114,12 +116,14 @@ export default function Game2() {
       setGameOver(true);
       setScore((prev) => prev + 1);
       setRounds((prev) => prev + 1);
+      toast.success("🎉 Correct! You guessed the word!");
       return;
     }
 
     if (!isCorrect && newAttempts <= 0) {
       setGameOver(true);
       setRounds((prev) => prev + 1);
+      toast.error(`❌ You lost! The word was "${word}"`);
     }
   };
 

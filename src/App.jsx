@@ -2,7 +2,6 @@ import { AuthProvider } from "./utils/AuthContext";
 import "./styles/App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import SignupPage from "./pages/SignupPage";
 import MainMenu from "./pages/MainMenu";
 import PlayPage from "./pages/PlayPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -10,15 +9,19 @@ import Game1 from "./pages/Game1";
 import Game2 from "./pages/Game2";
 import Game3 from "./pages/Game3";
 import { ProtectedRoute } from "./utils/AuthContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <AuthProvider>
       <Router>
+        {/* ToastContainer should be placed outside Routes */}
+        <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
-          <Route path="/signup" element={<SignupPage />} />
 
           {/* Protected Routes */}
           <Route

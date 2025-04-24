@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Modal, Button, Form, Nav, Fade } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
+import { toast } from "react-toastify";
 
 export default function HomePage() {
   const { login, signUp, googleLogin } = useAuth();
@@ -17,32 +18,30 @@ export default function HomePage() {
     try {
       if (isLogin) {
         await login(email, password);
-        alert("✅ Login successful!");
+        toast.success("✅ Login successful!");
         navigate("/main");
       } else {
-        // Sign-up logic without saving the token
         await signUp(email, password);
-        alert("✅ Sign-up successful! Please log in.");
-        setIsLogin(true); // Switch to login after signup
+        toast.success("✅ Sign-up successful! Please log in.");
+        setIsLogin(true);
       }
       setShowModal(false);
     } catch (err) {
-      alert(err.message);
+      toast.error(`❌ ${err.message}`);
     }
   };
 
   const handleGoogleLogin = async () => {
     try {
       const token = await googleLogin();
-      localStorage.setItem("token", token); // Save JWT in localStorage
-      alert("✅ Google login successful!");
+      localStorage.setItem("token", token);
+      toast.success("✅ Google login successful!");
       navigate("/main");
       setShowModal(false);
     } catch (err) {
-      alert(err.message);
+      toast.error(`❌ ${err.message}`);
     }
   };
-
   return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-white">
       <h1 className="mb-4">🎮 Welcome to Arcade Web 🎮</h1>

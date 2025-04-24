@@ -2,12 +2,12 @@ import React, { useEffect, useState, useRef } from "react";
 import Sidebar from "../components/Sidebar";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useAuth } from "../utils/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function Game3() {
   const [word, setWord] = useState("");
   const [scrambled, setScrambled] = useState("");
   const [guess, setGuess] = useState("");
-  const [feedback, setFeedback] = useState("");
   const [loading, setLoading] = useState(true);
 
   const [showGameModal, setShowGameModal] = useState(false);
@@ -83,14 +83,15 @@ export default function Game3() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       console.log("✅ Scramble score saved:", data);
+      toast.success("✅ Score saved successfully!");
     } catch (err) {
       console.error("❌ Failed to save scramble score:", err.message);
+      toast.error("❌ Failed to save score");
     }
   };
 
   const fetchWord = async () => {
     setLoading(true);
-    setFeedback("");
     setGuess("");
     try {
       const res = await fetch("https://random-word-api.vercel.app/api?words=1");
@@ -101,7 +102,6 @@ export default function Game3() {
       setScrambled(scrambledWord);
     } catch (err) {
       console.error("Failed to fetch word:", err);
-      setFeedback("Failed to fetch word. Try again later.");
     } finally {
       setLoading(false);
     }
@@ -122,21 +122,19 @@ export default function Game3() {
     if (guess.toLowerCase() === word) {
       setScore((prev) => prev + 1);
       setQuestionsAnswered((prev) => prev + 1);
-      setFeedback("✅ Correct! Loading next word...");
+      toast.success("🎉 Correct! You guessed the word!");
       setTimeout(() => {
         fetchWord();
         setGuess("");
-        setFeedback("");
       }, 1000);
     } else {
-      setFeedback("❌ Wrong guess. Try again or skip!");
+      toast.error(`❌ Wrong guess. Try again or skip!`);
     }
   };
 
   const handleSkip = () => {
     setQuestionsAnswered((prev) => prev + 1);
     fetchWord();
-    setFeedback("");
     setGuess("");
   };
 
@@ -249,7 +247,6 @@ export default function Game3() {
                     </Button>
                   </div>
                 </Form>
-                {feedback && <p className="mt-3 fw-bold">{feedback}</p>}
               </>
             )}
           </Modal.Body>
