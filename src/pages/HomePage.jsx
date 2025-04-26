@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { Modal, Button, Form, Nav, Fade } from "react-bootstrap";
+import {
+  Modal,
+  Button,
+  Form,
+  Nav,
+  Fade,
+  Container,
+  Row,
+  Col,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
 import { toast } from "react-toastify";
@@ -27,11 +36,9 @@ export default function HomePage() {
           toast.error("❌ Username is required.");
           return;
         }
-        1;
         await signUp(email, password);
         toast.success("✅ Sign-up successful!");
 
-        // Save to user_profiles table
         const res = await fetch(
           "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/user_profiles",
           {
@@ -51,7 +58,6 @@ export default function HomePage() {
         toast.success("✅ Profile saved! Please log in.");
         setIsLogin(true);
       }
-
       setShowModal(false);
     } catch (err) {
       toast.error(`❌ ${err.message}`);
@@ -61,7 +67,7 @@ export default function HomePage() {
   const handleGoogleLogin = async () => {
     try {
       const auth = getAuth();
-      await googleLogin(); // Triggers popup login
+      await googleLogin();
       const user = auth.currentUser;
 
       if (!user) throw new Error("User not found after Google login.");
@@ -73,7 +79,6 @@ export default function HomePage() {
       localStorage.setItem("token", token);
       toast.success("✅ Google login successful!");
 
-      // Save profile
       const res = await fetch(
         "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/user_profiles",
         {
@@ -98,18 +103,31 @@ export default function HomePage() {
   };
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-white">
-      <h1 className="mb-4">🎮 Welcome to Arcade Web 🎮</h1>
-      <Button
-        variant="warning"
-        onClick={() => setShowModal(true)}
-        className="px-4 py-2 fs-5"
-      >
-        Login / Sign Up
-      </Button>
+    <div className="d-flex flex-column justify-content-center align-items-center min-vh-100 bg-dark text-white p-3">
+      <Container className="text-center">
+        <Row>
+          <Col>
+            <h1 className="mb-4 display-4 fw-bold">🎮 Arcade Web 🎮</h1>
+            <p className="mb-4 fs-5">Play fun games anytime, anywhere!</p>
+            <Button
+              variant="warning"
+              onClick={() => setShowModal(true)}
+              className="px-5 py-3 fs-5"
+            >
+              Login / Sign Up
+            </Button>
+          </Col>
+        </Row>
+      </Container>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-        <Modal.Header closeButton className="border-0 pb-0">
+      {/* Modal */}
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        centered
+        size="sm"
+      >
+        <Modal.Header closeButton className="border-0">
           <Nav variant="tabs" className="w-100">
             <Nav.Item className="w-50 text-center">
               <Nav.Link
@@ -145,6 +163,7 @@ export default function HomePage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
                   />
                 </Form.Group>
 
@@ -155,6 +174,7 @@ export default function HomePage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
                   />
                 </Form.Group>
 
@@ -166,6 +186,7 @@ export default function HomePage() {
                       required
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
+                      placeholder="Choose a username"
                     />
                   </Form.Group>
                 )}
@@ -173,20 +194,19 @@ export default function HomePage() {
                 <Button
                   type="submit"
                   variant={isLogin ? "warning" : "success"}
-                  className="w-100 mb-2"
+                  className="w-100 mb-3 py-2"
                 >
                   {isLogin ? "Log In" : "Sign Up"}
                 </Button>
 
-                <div className="text-center">or</div>
+                <div className="text-center mb-2 text-muted">or</div>
 
                 <Button
                   variant="danger"
-                  className="w-100 mt-2 d-flex align-items-center justify-content-center gap-2"
+                  className="w-100 d-flex align-items-center justify-content-center gap-2 py-2"
                   onClick={handleGoogleLogin}
                 >
-                  <i className="bi bi-google" />
-                  Continue with Google
+                  <i className="bi bi-google"></i> Continue with Google
                 </Button>
               </Form>
             </div>

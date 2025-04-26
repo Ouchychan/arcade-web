@@ -25,7 +25,7 @@ export default function MainMenu() {
         const formatScores = (data, scoreKey, totalKey) =>
           data
             .map((score) => ({
-              username: score.username, // 👈 include username
+              username: score.username,
               score: (score[scoreKey] / score[totalKey]) * 100,
               corrected: score[scoreKey],
               total: score[totalKey],
@@ -55,47 +55,53 @@ export default function MainMenu() {
       {scores.length === 0 ? (
         <Alert variant="info">No records yet. Be the first to play!</Alert>
       ) : (
-        <Table striped bordered hover responsive>
-          <thead className="table-dark">
-            <tr>
-              <th>#</th>
-              <th>Username</th>
-              <th>Score (%)</th>
-              <th>Correct / Total</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {scores.map((score, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>{score.username || "Unknown"}</td>
-                <td>{score.score.toFixed(2)}%</td>
-                <td>
-                  {score.corrected} / {score.total}
-                </td>
-                <td>{new Date(score.created_at).toLocaleDateString()}</td>
+        <div className="table-responsive">
+          <Table striped bordered hover responsive className="align-middle">
+            <thead className="table-dark">
+              <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Score (%)</th>
+                <th>Correct / Total</th>
+                <th>Date</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {scores.map((score, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{score.username || "Unknown"}</td>
+                  <td>{score.score.toFixed(2)}%</td>
+                  <td>
+                    {score.corrected} / {score.total}
+                  </td>
+                  <td>{new Date(score.created_at).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       )}
     </div>
   );
 
   return (
-    <div style={{ display: "flex" }}>
+    <div className="d-flex flex-column flex-md-row min-vh-100 bg-light">
       <Sidebar />
 
-      <Container fluid className="py-4 px-5">
+      <Container fluid className="py-4 px-3 px-md-5 flex-grow-1">
         <Row>
           <Col>
-            <h2 className="mb-4">🎉 Welcome to the Arcade!</h2>
+            <h2 className="mb-4 text-center text-md-start">
+              🎉 Welcome to the Arcade!
+            </h2>
 
             <Card className="mb-4 shadow-sm">
               <Card.Body>
-                <Card.Title>Ready to Play?</Card.Title>
-                <Card.Text>
+                <Card.Title className="fs-4 text-center text-md-start">
+                  Ready to Play?
+                </Card.Title>
+                <Card.Text className="text-center text-md-start">
                   Explore our collection of mini-games by clicking the{" "}
                   <strong>Play</strong> button in the sidebar.
                   <br />

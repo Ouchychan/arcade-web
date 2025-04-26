@@ -166,6 +166,7 @@ export default function Game2() {
         display: "flex",
         justifyContent: "space-between",
         width: "100%",
+        flexWrap: "wrap", // Allow wrapping on small screens
       }}
     >
       <Sidebar />
@@ -185,7 +186,11 @@ export default function Game2() {
 
           <p
             className="text-light mb-4"
-            style={{ maxWidth: "500px", fontSize: "1rem" }}
+            style={{
+              maxWidth: "500px",
+              fontSize: "1rem",
+              margin: "0 auto", // Center text on small screens
+            }}
           >
             🕹️ Welcome to Hangman!
             <br />

@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
-import { FaHome, FaPlay, FaUser } from "react-icons/fa"; // Added FaHome
+import { FaHome, FaPlay, FaUser, FaBars, FaTimes } from "react-icons/fa"; // Added hamburger and close icons
 import { useState } from "react";
 
 export default function Sidebar() {
@@ -8,6 +8,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isOpen, setIsOpen] = useState(false); // Sidebar open/close for mobile
 
   const handleLogout = () => {
     logout();
@@ -27,69 +28,102 @@ export default function Sidebar() {
 
   const isActive = (path) => location.pathname === path;
 
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <div style={sidebarStyles}>
-      <nav>
-        <Link to="/main" style={linkStyles(isActive("/main"))}>
-          <FaHome style={iconStyles} />
-          <span style={textStyles}>Main Menu</span>
-        </Link>
+    <>
+      {/* Mobile Hamburger Button */}
+      <div style={hamburgerButtonStyles} onClick={toggleSidebar}>
+        {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+      </div>
 
-        <Link to="/play" style={linkStyles(isActive("/play"))}>
-          <FaPlay style={iconStyles} />
-          <span style={textStyles}>Play</span>
-        </Link>
-
-        <Link to="/profile" style={linkStyles(isActive("/profile"))}>
-          <FaUser style={iconStyles} />
-          <span style={textStyles}>Profile</span>
-        </Link>
-
-        <button style={logoutButtonStyles} onClick={handleLogoutConfirmation}>
-          Sign Out
-        </button>
-      </nav>
-
-      {showConfirm && (
-        <div style={confirmationStyles}>
-          <p>Are you sure you want to log out?</p>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: "10px",
-              marginTop: "10px",
-            }}
+      {/* Sidebar */}
+      <div
+        style={{
+          ...sidebarStyles,
+          left: isOpen ? "0" : "-220px", // Slide in/out
+        }}
+      >
+        <nav>
+          <Link
+            to="/main"
+            style={linkStyles(isActive("/main"))}
+            onClick={() => setIsOpen(false)}
           >
-            <button
-              onClick={() => confirmLogout(true)}
-              style={confirmButtonStyles}
+            <FaHome style={iconStyles} />
+            <span style={textStyles}>Main Menu</span>
+          </Link>
+
+          <Link
+            to="/play"
+            style={linkStyles(isActive("/play"))}
+            onClick={() => setIsOpen(false)}
+          >
+            <FaPlay style={iconStyles} />
+            <span style={textStyles}>Play</span>
+          </Link>
+
+          <Link
+            to="/profile"
+            style={linkStyles(isActive("/profile"))}
+            onClick={() => setIsOpen(false)}
+          >
+            <FaUser style={iconStyles} />
+            <span style={textStyles}>Profile</span>
+          </Link>
+
+          <button style={logoutButtonStyles} onClick={handleLogoutConfirmation}>
+            Sign Out
+          </button>
+        </nav>
+
+        {showConfirm && (
+          <div style={confirmationStyles}>
+            <p>Are you sure you want to log out?</p>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "10px",
+                marginTop: "10px",
+              }}
             >
-              Yes
-            </button>
-            <button
-              onClick={() => confirmLogout(false)}
-              style={cancelButtonStyles}
-            >
-              No
-            </button>
+              <button
+                onClick={() => confirmLogout(true)}
+                style={confirmButtonStyles}
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => confirmLogout(false)}
+                style={cancelButtonStyles}
+              >
+                No
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }
 
-// Styles (same as before)
+// Styles
 const sidebarStyles = {
+  position: "fixed",
+  top: 0,
+  left: 0,
   width: "200px",
-  background: "#00bcd4",
   height: "100vh",
+  background: "#00bcd4",
   padding: "20px",
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
-  transition: "all 0.3s ease",
+  transition: "left 0.3s ease",
+  zIndex: 1000,
 };
 
 const linkStyles = (isActive) => ({
@@ -130,6 +164,7 @@ const confirmationStyles = {
   borderRadius: "10px",
   textAlign: "center",
   boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+  marginTop: "20px",
 };
 
 const confirmButtonStyles = {
@@ -150,4 +185,20 @@ const cancelButtonStyles = {
   border: "none",
   cursor: "pointer",
   transition: "background-color 0.3s ease",
+};
+
+const hamburgerButtonStyles = {
+  position: "fixed",
+  top: "15px",
+  left: "15px",
+  background: "#00bcd4",
+  color: "white",
+  border: "none",
+  borderRadius: "8px",
+  padding: "8px",
+  cursor: "pointer",
+  zIndex: 1100, // higher than sidebar
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 };

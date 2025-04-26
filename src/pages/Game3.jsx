@@ -148,7 +148,13 @@ export default function Game3() {
   };
 
   return (
-    <div style={{ display: "flex", backgroundColor: "#BFBC95" }}>
+    <div
+      style={{
+        display: "flex",
+        backgroundColor: "#BFBC95",
+        minHeight: "100vh",
+      }}
+    >
       <Sidebar />
       <div
         style={{
@@ -156,17 +162,25 @@ export default function Game3() {
           padding: "20px",
           flex: 1,
           textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center", // Centering the content vertically
+          height: "100vh", // Ensure full height
         }}
       >
         <div
           className="d-flex flex-column justify-content-center align-items-center"
-          style={{ height: "100%" }}
+          style={{ height: "100%", padding: "20px" }}
         >
           <h2 className="text-black fw-bold text-center mb-4">Word Scramble</h2>
 
           <p
             className="text-dark mb-4"
-            style={{ maxWidth: "500px", fontSize: "1rem" }}
+            style={{
+              maxWidth: "500px",
+              fontSize: "1rem",
+              margin: "0 auto", // Center the text for smaller screens
+            }}
           >
             🕹️ Welcome to Scramble!
             <br />
@@ -184,6 +198,9 @@ export default function Game3() {
           <Button
             className="rainbow-button fs-4 px-5 py-3"
             onClick={handleStartGame}
+            style={{
+              minWidth: "200px", // Ensures the button is large enough
+            }}
           >
             Start Game
           </Button>
@@ -192,7 +209,7 @@ export default function Game3() {
         {/* Game Modal */}
         <Modal
           show={showGameModal}
-          size="xl"
+          size="lg"
           centered
           backdrop="static"
           onHide={() => {
@@ -201,7 +218,6 @@ export default function Game3() {
             );
             if (confirmExit) {
               setShowGameModal(false);
-
               clearInterval(timerRef.current);
             }
           }}
