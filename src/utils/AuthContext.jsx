@@ -18,12 +18,15 @@ export const AuthContext = createContext({
   googleLogin: () => {},
   currentUser: null,
   username: "",
+  user_email: "",
 });
 
 // Auth provider component
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [username, setUsername] = useState(""); // State for storing username
+  const [username, setUsername] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [loading, setLoading] = useState(true); // Added loading state
 
   // Email/password login
   const login = (email, password) =>
@@ -45,23 +48,34 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Fetch user profile (username) based on email after login
+  // Track user auth state and fetch profile
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
       if (user) {
         try {
+          const token = await user.getIdToken();
           const res = await fetch(
-            `https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/user_profiles/${user.email}`
+            `https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/user_profiles/${encodeURIComponent(
+              user.email
+            )}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
           );
           const data = await res.json();
-          setUsername(data.username); // Set username after fetching from the backend
+          setUsername(data.username); // Backend returns { data: { username, user_email } }
+          setUserEmail(data.user_email);
         } catch (err) {
-          console.error("Error fetching username:", err);
+          console.error("Error fetching user profile:", err);
         }
       } else {
-        setUsername(""); // Reset username when no user is logged in
+        setUsername("");
+        setUserEmail("");
       }
+      setCurrentUser(user);
+      setLoading(false); // Stop loading once the user state is set
     });
 
     return () => unsubscribe();
@@ -69,9 +83,17 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ currentUser, username, login, signUp, logout, googleLogin }}
+      value={{
+        currentUser,
+        login,
+        signUp,
+        logout,
+        googleLogin,
+        username,
+        userEmail,
+      }}
     >
-      {children}
+      {!loading && children} {/* Only render children when loading is done */}
     </AuthContext.Provider>
   );
 };
@@ -85,10 +107,10 @@ export const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!currentUser) {
+    if (currentUser === null) {
       navigate("/"); // Redirect to login if user is not authenticated
     }
   }, [currentUser, navigate]);
 
-  return currentUser ? children : null; // Render children only if user is authenticated
+  return currentUser ? children : null;
 };

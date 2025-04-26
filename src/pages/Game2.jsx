@@ -4,7 +4,7 @@ import Sidebar from "../components/Sidebar";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useAuth } from "../utils/AuthContext";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import { BsX } from "react-icons/bs";
 
 export default function Game2() {
@@ -23,7 +23,11 @@ export default function Game2() {
   const [timeLeft, setTimeLeft] = useState(120);
   const timerRef = useRef(null);
 
-  const { username } = useAuth();
+  const { currentUser } = useAuth();
+  const username = currentUser?.displayName || "Anonymous";
+  const user_email = currentUser?.email || "";
+
+  console.log("Auth context:", { username, user_email, currentUser });
 
   useEffect(() => {
     if (gameStarted) {
