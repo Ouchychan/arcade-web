@@ -3,6 +3,7 @@ import { Modal, Button, Form, Nav, Fade } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
 import { toast } from "react-toastify";
+import { getAuth } from "firebase/auth";
 
 export default function HomePage() {
   const { login, signUp, googleLogin } = useAuth();
@@ -11,6 +12,7 @@ export default function HomePage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
   const [showModal, setShowModal] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -21,10 +23,35 @@ export default function HomePage() {
         toast.success("✅ Login successful!");
         navigate("/main");
       } else {
+        if (!username.trim()) {
+          toast.error("❌ Username is required.");
+          return;
+        }
+        1;
         await signUp(email, password);
-        toast.success("✅ Sign-up successful! Please log in.");
+        toast.success("✅ Sign-up successful!");
+
+        // Save to user_profiles table
+        const res = await fetch(
+          "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/user_profiles",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ user_email: email, username }),
+          }
+        );
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Failed to save profile.");
+        }
+
+        toast.success("✅ Profile saved! Please log in.");
         setIsLogin(true);
       }
+
       setShowModal(false);
     } catch (err) {
       toast.error(`❌ ${err.message}`);
@@ -33,15 +60,43 @@ export default function HomePage() {
 
   const handleGoogleLogin = async () => {
     try {
-      const token = await googleLogin();
+      const auth = getAuth();
+      await googleLogin(); // Triggers popup login
+      const user = auth.currentUser;
+
+      if (!user) throw new Error("User not found after Google login.");
+
+      const email = user.email;
+      const username = user.displayName;
+      const token = await user.getIdToken();
+
       localStorage.setItem("token", token);
       toast.success("✅ Google login successful!");
+
+      // Save profile
+      const res = await fetch(
+        "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/user_profiles",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ user_email: email, username }),
+        }
+      );
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to save Google profile.");
+      }
+
       navigate("/main");
       setShowModal(false);
     } catch (err) {
       toast.error(`❌ ${err.message}`);
     }
   };
+
   return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark text-white">
       <h1 className="mb-4">🎮 Welcome to Arcade Web 🎮</h1>
@@ -102,6 +157,18 @@ export default function HomePage() {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </Form.Group>
+
+                {!isLogin && (
+                  <Form.Group className="mb-3">
+                    <Form.Label>Username</Form.Label>
+                    <Form.Control
+                      type="text"
+                      required
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </Form.Group>
+                )}
 
                 <Button
                   type="submit"

@@ -23,7 +23,7 @@ export default function Game2() {
   const [timeLeft, setTimeLeft] = useState(120);
   const timerRef = useRef(null);
 
-  const { currentUser } = useAuth();
+  const { username } = useAuth();
 
   useEffect(() => {
     if (gameStarted) {
@@ -64,7 +64,7 @@ export default function Game2() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: currentUser.email,
+            username,
             game: "hangman",
             corrected_questions: score,
             total_questions: rounds,

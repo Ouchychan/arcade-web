@@ -25,6 +25,7 @@ export default function MainMenu() {
         const formatScores = (data, scoreKey, totalKey) =>
           data
             .map((score) => ({
+              username: score.username, // 👈 include username
               score: (score[scoreKey] / score[totalKey]) * 100,
               corrected: score[scoreKey],
               total: score[totalKey],
@@ -58,6 +59,7 @@ export default function MainMenu() {
           <thead className="table-dark">
             <tr>
               <th>#</th>
+              <th>Username</th>
               <th>Score (%)</th>
               <th>Correct / Total</th>
               <th>Date</th>
@@ -67,6 +69,7 @@ export default function MainMenu() {
             {scores.map((score, index) => (
               <tr key={index}>
                 <td>{index + 1}</td>
+                <td>{score.username || "Unknown"}</td>
                 <td>{score.score.toFixed(2)}%</td>
                 <td>
                   {score.corrected} / {score.total}

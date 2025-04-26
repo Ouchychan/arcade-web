@@ -27,7 +27,7 @@ export default function Game1() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [shuffledChoices, setShuffledChoices] = useState([]);
 
-  const { currentUser } = useAuth();
+  const { username } = useAuth();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -42,13 +42,22 @@ export default function Game1() {
 
     fetchCategories();
 
-    if (showGameOver && currentUser) {
+    if (showGameOver) {
       const saveScore = async () => {
         try {
           const selectedCat = categories.find(
             (cat) => cat.id.toString() === category
           );
           const categoryName = selectedCat ? selectedCat.name : "Unknown";
+          console.log({
+            username,
+            game: "quiz",
+            score,
+            total: questions.length,
+            category: categoryName,
+            type,
+            difficulty,
+          });
 
           await fetch(
             "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/quiz_scores",
@@ -56,11 +65,11 @@ export default function Game1() {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                email: currentUser.email,
+                username,
                 game: "quiz",
                 score,
                 total: questions.length,
-                category: categoryName, // ✅ send category name
+                category: categoryName,
                 type,
                 difficulty,
               }),
@@ -75,7 +84,7 @@ export default function Game1() {
       };
       saveScore();
     }
-  }, [showGameOver, currentUser, score, questions.length]);
+  }, [showGameOver, score, questions.length]);
 
   useEffect(() => {
     if (questions.length === 0) return;
@@ -131,7 +140,7 @@ export default function Game1() {
   const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
 
   const handleAnswer = (answer) => {
-    if (isTransitioning || selectedAnswer !== null) return; // prevent double click
+    if (isTransitioning || selectedAnswer !== null) return;
 
     const correct = questions[currentQIndex].correct_answer;
     const isCorrect = answer === correct;

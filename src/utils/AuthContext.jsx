@@ -17,11 +17,13 @@ export const AuthContext = createContext({
   logout: () => {},
   googleLogin: () => {},
   currentUser: null,
+  username: "",
 });
 
 // Auth provider component
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [username, setUsername] = useState(""); // State for storing username
 
   // Email/password login
   const login = (email, password) =>
@@ -43,17 +45,31 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Track user auth state
+  // Fetch user profile (username) based on email after login
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
+      if (user) {
+        try {
+          const res = await fetch(
+            `https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/user_profiles/${user.email}`
+          );
+          const data = await res.json();
+          setUsername(data.username); // Set username after fetching from the backend
+        } catch (err) {
+          console.error("Error fetching username:", err);
+        }
+      } else {
+        setUsername(""); // Reset username when no user is logged in
+      }
     });
+
     return () => unsubscribe();
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ currentUser, login, signUp, logout, googleLogin }}
+      value={{ currentUser, username, login, signUp, logout, googleLogin }}
     >
       {children}
     </AuthContext.Provider>

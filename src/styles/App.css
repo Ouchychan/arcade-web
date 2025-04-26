@@ -130,9 +130,3 @@ body {
     color: #fff;
   }
 
-  /* profile */
-  table.table tbody tr.table-hoverable-row:hover {
-    background-color: #ffe8a1 !important;
-    color: #000 !important;
-  }
-  

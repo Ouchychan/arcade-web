@@ -22,7 +22,7 @@ export default function Game3() {
   const scoreRef = useRef(score);
   const questionsRef = useRef(questionsAnswered);
 
-  const { currentUser } = useAuth();
+  const { username } = useAuth();
 
   useEffect(() => {
     if (showGameModal) {
@@ -66,8 +66,6 @@ export default function Game3() {
   };
 
   const saveScrambleScore = async () => {
-    if (!currentUser?.email) return;
-
     try {
       const res = await fetch(
         "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/scramble_scores",
@@ -75,7 +73,7 @@ export default function Game3() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: currentUser.email,
+            username,
             total_questions: questionsRef.current,
             corrected_questions: scoreRef.current,
             words: correctWords,
