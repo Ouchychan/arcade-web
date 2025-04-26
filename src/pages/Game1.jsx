@@ -212,13 +212,14 @@ export default function Game1() {
     >
       <Sidebar />
       <div
-        className="container-fluid p-0" // Change to container-fluid to remove padding and allow full width
+        className="container-fluid py-4" // Changed from "container" to "container-fluid"
         style={{
           backgroundColor: "#48A9A6",
           flex: 1,
+          padding: 0, // Removed padding to remove the side gap
         }}
       >
-        <h2 className="text-center m-3">Quiz Game</h2>
+        <h2 className="text-center">Quiz Game</h2>
 
         <p className="text-light text-center fs-6 mt-3 mb-4">
           🎮 Welcome to the Quiz Game! <br />
@@ -287,63 +288,114 @@ export default function Game1() {
                   >
                     <option value="">Default</option>
                     <option value="multiple">Multiple Choice</option>
-                    <option value="boolean">True/False</option>
+                    <option value="boolean">True / False</option>
                   </Form.Select>
                 </Form.Group>
 
-                <div className="d-flex justify-content-center">
-                  <Button
-                    variant="outline-warning"
-                    size="lg"
-                    onClick={fetchQuestions}
-                    className="w-100"
-                  >
-                    Start Quiz
-                  </Button>
-                </div>
+                <Button variant="primary" onClick={fetchQuestions}>
+                  Start Quiz
+                </Button>
+
+                {error && <p className="text-danger mt-2">⚠️ {error}</p>}
               </Form>
             </div>
           </div>
         </div>
 
-        {showQuiz && (
-          <div className="quiz-container">
-            <div className="question">
-              <h4>{questions[currentQIndex].question}</h4>
-              {renderAnswers()}
-            </div>
-          </div>
-        )}
-
-        {showGameOver && (
-          <Modal
-            show={showGameOver}
-            onHide={handleExit}
-            centered
-            className="border-warning"
+        {/* Quiz Modal */}
+        <Modal
+          show={showQuiz && questions.length > 0 && !showGameOver}
+          size="lg"
+          centered
+          backdrop="static"
+          keyboard={false}
+          contentClassName="bg-dark text-warning"
+          dialogClassName="modal-dialog-centered modal-lg"
+          style={{ backgroundColor: "#48A9A6" }}
+        >
+          {/* Custom Exit Button */}
+          <button
+            onClick={() => {
+              const confirmExit = window.confirm(
+                "Are you sure you want to exit the quiz?"
+              );
+              if (confirmExit) {
+                setShowQuiz(false);
+              }
+            }}
+            className="btn btn-outline-warning position-absolute"
+            style={{ top: "10px", right: "10px", zIndex: 1051 }}
           >
-            <Modal.Header closeButton>
-              <Modal.Title>Game Over</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="text-center">
-              <p>Your final score is: {score}</p>
-              <Button
-                variant="outline-warning"
-                onClick={handleRestart}
-                className="w-100"
-              >
-                Play Again
-              </Button>
-              <Button
-                variant="outline-danger"
-                onClick={handleExit}
-                className="w-100 mt-2"
-              >
-                Exit
-              </Button>
-            </Modal.Body>
-          </Modal>
-        )}
+            <BsX size={24} />
+          </button>
+
+          <ProgressBar
+            now={((currentQIndex + 1) / questions.length) * 100}
+            variant="warning"
+            className="rounded-0"
+          />
+          <Modal.Header>
+            <Modal.Title>
+              Question {currentQIndex + 1} of {questions.length}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {questions[currentQIndex] && (
+              <>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: questions[currentQIndex].question,
+                  }}
+                />
+                <div className="mt-3">{renderAnswers()}</div>
+              </>
+            )}
+          </Modal.Body>
+        </Modal>
+
+        {/* Game Over Modal */}
+        <Modal
+          show={showGameOver}
+          centered
+          contentClassName="bg-dark text-warning"
+          style={{ backgroundColor: "#48A9A6" }}
+        >
+          <Modal.Header>
+            <Modal.Title>🎉 Game Over!</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="text-center">
+            <p className="fs-4 my-3">
+              Your score:{" "}
+              <strong>
+                {score} / {questions.length}
+              </strong>
+            </p>
+            <Button
+              variant="warning"
+              onClick={handleRestart}
+              className="me-2 text-dark border-0 rounded-0 px-4"
+            >
+              Restart
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleExit}
+              className="text-warning border-0 rounded-0 px-4"
+            >
+              Exit
+            </Button>
+          </Modal.Body>
+        </Modal>
+
+        {/* Countdown Modal */}
+        <Modal
+          show={countdown !== null}
+          centered
+          contentClassName="bg-dark text-warning"
+          style={{ backgroundColor: "#48A9A6" }}
+        >
+          <Modal.Body className="text-center fs-1">{countdown}</Modal.Body>
+        </Modal>
       </div>
     </div>
   );
