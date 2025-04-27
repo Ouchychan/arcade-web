@@ -95,11 +95,6 @@ export const AuthProvider = ({ children }) => {
       }
       setCurrentUser(user);
       setLoading(false); // Stop loading once the user state is set
-
-      // Navigate to the main page after the user logs in or signs up
-      if (user) {
-        navigate("/main");
-      }
     });
 
     return () => unsubscribe();
