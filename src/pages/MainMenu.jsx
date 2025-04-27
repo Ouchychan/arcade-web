@@ -12,13 +12,13 @@ export default function MainMenu() {
       try {
         const [quizRes, hangmanRes, scrambleRes] = await Promise.all([
           fetch(
-            "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/quiz_scores"
+            "https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/quiz_scores"
           ).then((res) => res.json()),
           fetch(
-            "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/hangman_scores"
+            "https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/hangman_scores"
           ).then((res) => res.json()),
           fetch(
-            "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/scramble_scores"
+            "https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/scramble_scores"
           ).then((res) => res.json()),
         ]);
 

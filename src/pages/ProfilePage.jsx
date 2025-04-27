@@ -6,8 +6,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 export default function ProfilePage() {
-  const { currentUser } = useAuth();
-  const { username } = useAuth();
+  const { currentUser, userId, userEmail } = useAuth();
   const [profile, setProfile] = useState(null);
   const [newUsername, setNewUsername] = useState("");
   const [showEdit, setShowEdit] = useState(false);
@@ -29,7 +28,7 @@ export default function ProfilePage() {
     const fetchQuizScores = async () => {
       try {
         const res = await fetch(
-          `https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/quiz_scores/${username}`
+          `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/quiz_scores/${userId}` // Updated to use userId
         );
         const data = await res.json();
         setQuizHistory(data);
@@ -41,7 +40,7 @@ export default function ProfilePage() {
     const fetchHangmanScores = async () => {
       try {
         const res = await fetch(
-          `https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/hangman_scores/${username}`
+          `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/hangman_scores/${userId}` // Updated to use userId
         );
         const data = await res.json();
         setHangmanHistory(data);
@@ -53,7 +52,7 @@ export default function ProfilePage() {
     const fetchScrambleScores = async () => {
       try {
         const res = await fetch(
-          `https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/scramble_scores/${username}`
+          `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/scramble_scores/${userId}` // Updated to use userId
         );
         const data = await res.json();
         setScrambleHistory(data);
@@ -62,17 +61,19 @@ export default function ProfilePage() {
       }
     };
 
-    fetchQuizScores();
-    fetchHangmanScores();
-    fetchScrambleScores();
-  }, [currentUser]);
+    if (userId) {
+      fetchQuizScores();
+      fetchHangmanScores();
+      fetchScrambleScores();
+    }
+  }, [userId]);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const token = await currentUser.getIdToken();
         const res = await fetch(
-          `https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/user_profiles/${currentUser.email}`,
+          `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/user_profiles/${userEmail}`, // Updated to use userId
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -87,8 +88,8 @@ export default function ProfilePage() {
       }
     };
 
-    if (currentUser) fetchProfile();
-  }, [currentUser]);
+    if (currentUser && userId) fetchProfile();
+  }, [currentUser, userId]);
 
   const handleDeleteQuiz = async (quizId) => {
     const confirmDelete = window.confirm(
@@ -99,7 +100,7 @@ export default function ProfilePage() {
     try {
       const token = await currentUser.getIdToken();
       const res = await fetch(
-        `https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/quiz_scores/${quizId}`,
+        `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/quiz_scores/${quizId}`,
         {
           method: "DELETE",
           headers: {
@@ -130,7 +131,7 @@ export default function ProfilePage() {
     try {
       const token = await currentUser.getIdToken();
       const res = await fetch(
-        `https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/hangman_scores/${id}`,
+        `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/hangman_scores/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -161,7 +162,7 @@ export default function ProfilePage() {
     try {
       const token = await currentUser.getIdToken();
       const res = await fetch(
-        `https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/scramble_scores/${id}`,
+        `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/scramble_scores/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -228,9 +229,7 @@ export default function ProfilePage() {
                   try {
                     const token = await currentUser.getIdToken();
                     const res = await fetch(
-                      `https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/user_profiles/${encodeURIComponent(
-                        currentUser.email
-                      )}`,
+                      `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/user_profiles/${userEmail}`,
                       {
                         method: "PUT",
                         headers: {
@@ -243,14 +242,12 @@ export default function ProfilePage() {
                     if (res.ok) {
                       const data = await res.json();
                       toast.success("✅ Username updated!");
+
                       // Update profile state immediately
                       setProfile((prev) => ({
                         ...prev,
                         username: data.username,
                       }));
-
-                      // Scroll to top after update
-                      window.scrollTo(0, 0);
 
                       // Close the modal
                       setShowEdit(false);

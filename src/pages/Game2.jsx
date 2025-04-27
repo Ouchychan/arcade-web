@@ -23,11 +23,9 @@ export default function Game2() {
   const [timeLeft, setTimeLeft] = useState(120);
   const timerRef = useRef(null);
 
-  const { currentUser } = useAuth();
-  const username = currentUser?.displayName || "Anonymous";
-  const user_email = currentUser?.email || "";
+  const { userId } = useAuth(); // Get userId from AuthContext
 
-  console.log("Auth context:", { username, user_email, currentUser });
+  console.log("Auth context:", { userId });
 
   useEffect(() => {
     if (gameStarted) {
@@ -61,17 +59,17 @@ export default function Game2() {
   const saveScore = async () => {
     try {
       const response = await fetch(
-        "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/hangman_scores",
+        "https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/hangman_scores",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username,
+            user_id: userId,
             game: "hangman",
-            corrected_questions: score,
             total_questions: rounds,
+            corrected_questions: score,
             words: correctWords,
           }),
         }

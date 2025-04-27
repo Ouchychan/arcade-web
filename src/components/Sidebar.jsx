@@ -10,9 +10,14 @@ export default function Sidebar() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [isOpen, setIsOpen] = useState(false); // Sidebar open/close for mobile
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/");
+      setIsOpen(false);
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
 
   const handleLogoutConfirmation = () => {

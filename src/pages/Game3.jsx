@@ -22,7 +22,9 @@ export default function Game3() {
   const scoreRef = useRef(score);
   const questionsRef = useRef(questionsAnswered);
 
-  const { username } = useAuth();
+  const { userId } = useAuth();
+
+  console.log("Auth context:", { userId });
 
   useEffect(() => {
     if (showGameModal) {
@@ -68,12 +70,12 @@ export default function Game3() {
   const saveScrambleScore = async () => {
     try {
       const res = await fetch(
-        "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/scramble_scores",
+        "https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/scramble_scores",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            username,
+            user_id: userId,
             total_questions: questionsRef.current,
             corrected_questions: scoreRef.current,
             words: correctWords,

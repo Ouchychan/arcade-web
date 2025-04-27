@@ -40,7 +40,7 @@ export default function HomePage() {
         toast.success("✅ Sign-up successful!");
 
         const res = await fetch(
-          "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/user_profiles",
+          "https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/user_profiles",
           {
             method: "POST",
             headers: {
@@ -80,7 +80,7 @@ export default function HomePage() {
       toast.success("✅ Google login successful!");
 
       const res = await fetch(
-        "https://af4103b4-8d83-4a81-ac80-46387965d272-00-98h4qksl1o0i.pike.replit.dev/api/user_profiles",
+        "https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/user_profiles",
         {
           method: "POST",
           headers: {
