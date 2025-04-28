@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Modal,
   Button,
@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
 import { toast } from "react-toastify";
 import { getAuth } from "firebase/auth";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
 export default function HomePage() {
   const { login, signUp, googleLogin } = useAuth();
@@ -23,6 +24,23 @@ export default function HomePage() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [showModal, setShowModal] = useState(false);
+
+  const [backgroundUrl, setBackgroundUrl] = useState("");
+
+  useEffect(() => {
+    const fetchBackgroundImage = async () => {
+      try {
+        const storage = getStorage();
+        const storageRef = ref(storage, "arcadeWeb.jpg");
+        const url = await getDownloadURL(storageRef);
+        setBackgroundUrl(url);
+      } catch (error) {
+        console.error("Error fetching background image:", error);
+      }
+    };
+
+    fetchBackgroundImage();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -103,12 +121,23 @@ export default function HomePage() {
   };
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center min-vh-100 bg-dark text-white p-3">
+    <div
+      className="position-relative d-flex flex-column justify-content-center align-items-center min-vh-100 text-white p-3"
+      style={{
+        backgroundImage: backgroundUrl ? `url('${backgroundUrl}')` : "none",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
       <Container className="text-center">
         <Row>
           <Col>
             <h1 className="mb-4 display-4 fw-bold">🎮 Arcade Web 🎮</h1>
-            <p className="mb-4 fs-5">Play fun games anytime, anywhere!</p>
+            <p className="mb-4 fs-5">
+              Play fun games anytime, anywhere! Start gaming by logging in or
+              signing up!
+            </p>
             <Button
               variant="warning"
               onClick={() => setShowModal(true)}
@@ -213,6 +242,91 @@ export default function HomePage() {
           </Fade>
         </Modal.Body>
       </Modal>
+
+      {/* Showcase games */}
+      <Container className="mt-5">
+        <Fade in={true} appear={true} timeout={500}>
+          <Row className="g-4">
+            <Col md={4}>
+              <div
+                className="card h-100 shadow-lg bg-dark text-white"
+                style={{
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.05)";
+                  e.currentTarget.style.boxShadow =
+                    "0 10px 20px rgba(0,0,0,0.5)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.3)";
+                }}
+              >
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title">🧠 Quiz Game</h5>
+                  <p className="card-text flex-grow-1">
+                    Test your knowledge across multiple categories and
+                    difficulties. How many questions can you get right?
+                  </p>
+                </div>
+              </div>
+            </Col>
+
+            <Col md={4}>
+              <div
+                className="card h-100 shadow-lg bg-dark text-white"
+                style={{
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.05)";
+                  e.currentTarget.style.boxShadow =
+                    "0 10px 20px rgba(0,0,0,0.5)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.3)";
+                }}
+              >
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title">🎯 Hangman</h5>
+                  <p className="card-text flex-grow-1">
+                    Guess the hidden word before the hangman is complete! Choose
+                    your letters wisely.
+                  </p>
+                </div>
+              </div>
+            </Col>
+
+            <Col md={4}>
+              <div
+                className="card h-100 shadow-lg bg-dark text-white"
+                style={{
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.05)";
+                  e.currentTarget.style.boxShadow =
+                    "0 10px 20px rgba(0,0,0,0.5)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.3)";
+                }}
+              >
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title">🔀 Word Scramble</h5>
+                  <p className="card-text flex-grow-1">
+                    Unscramble the letters to find the correct word. Challenge
+                    your brain with tricky puzzles!
+                  </p>
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </Fade>
+      </Container>
     </div>
   );
 }

@@ -25,7 +25,7 @@ export default function PlayPage() {
 
   return (
     <div
-      style={{ display: "flex", height: "100vh", backgroundColor: "#fce4ec" }}
+      style={{ display: "flex", height: "100vh", backgroundColor: "#f49fbc" }}
     >
       <Sidebar />
       <div className="container d-flex flex-column justify-content-center align-items-center">

@@ -214,9 +214,9 @@ export default function Game2() {
             onClick={handleStartGame}
             className="rainbow-button"
             style={{
-              fontSize: "1.5rem", // Increase font size
-              padding: "12px 24px", // Increase padding to make the button larger
-              minWidth: "200px", // Optional: Ensure button is wider
+              fontSize: "1.5rem",
+              padding: "12px 24px",
+              minWidth: "200px",
             }}
           >
             Start Game

@@ -28,7 +28,7 @@ export default function ProfilePage() {
     const fetchQuizScores = async () => {
       try {
         const res = await fetch(
-          `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/quiz_scores/${userId}` // Updated to use userId
+          `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/quiz_scores/${userId}`
         );
         const data = await res.json();
         setQuizHistory(data);
@@ -40,7 +40,7 @@ export default function ProfilePage() {
     const fetchHangmanScores = async () => {
       try {
         const res = await fetch(
-          `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/hangman_scores/${userId}` // Updated to use userId
+          `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/hangman_scores/${userId}`
         );
         const data = await res.json();
         setHangmanHistory(data);
@@ -52,7 +52,7 @@ export default function ProfilePage() {
     const fetchScrambleScores = async () => {
       try {
         const res = await fetch(
-          `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/scramble_scores/${userId}` // Updated to use userId
+          `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/scramble_scores/${userId}`
         );
         const data = await res.json();
         setScrambleHistory(data);
@@ -73,7 +73,7 @@ export default function ProfilePage() {
       try {
         const token = await currentUser.getIdToken();
         const res = await fetch(
-          `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/user_profiles/${userEmail}`, // Updated to use userId
+          `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/user_profiles/${userEmail}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -318,9 +318,9 @@ export default function ProfilePage() {
             show={showQuizModal}
             onHide={() => setShowQuizModal(false)}
             centered
-            size="lg" // Modal size for larger screens
+            size="lg"
             contentClassName="bg-dark text-light"
-            dialogClassName="modal-dialog-scrollable" // Allow scrolling inside modal if needed
+            dialogClassName="modal-dialog-scrollable"
           >
             <Modal.Header closeButton>
               <Modal.Title>Quiz Game Details</Modal.Title>
@@ -419,9 +419,9 @@ export default function ProfilePage() {
             show={showHangmanModal}
             onHide={() => setShowHangmanModal(false)}
             centered
-            size="lg" // Modal size for larger screens
+            size="lg"
             contentClassName="bg-dark text-light"
-            dialogClassName="modal-dialog-scrollable" // Allow scrolling inside modal if needed
+            dialogClassName="modal-dialog-scrollable"
           >
             <Modal.Header closeButton>
               <Modal.Title>Hangman Game Summary</Modal.Title>
@@ -529,9 +529,9 @@ export default function ProfilePage() {
             show={showScrambleModal}
             onHide={() => setShowScrambleModal(false)}
             centered
-            size="lg" // Modal size for larger screens
+            size="lg"
             contentClassName="bg-dark text-light"
-            dialogClassName="modal-dialog-scrollable" // Allow scrolling inside modal if needed
+            dialogClassName="modal-dialog-scrollable"
           >
             <Modal.Header closeButton>
               <Modal.Title>Game Details</Modal.Title>

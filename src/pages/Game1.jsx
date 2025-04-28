@@ -212,11 +212,11 @@ export default function Game1() {
     >
       <Sidebar />
       <div
-        className="container-fluid py-4" // Changed from "container" to "container-fluid"
+        className="container-fluid py-4"
         style={{
           backgroundColor: "#48A9A6",
           flex: 1,
-          padding: 0, // Removed padding to remove the side gap
+          padding: 0,
         }}
       >
         <h2 className="text-center">Quiz Game</h2>

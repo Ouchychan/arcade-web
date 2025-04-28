@@ -50,7 +50,7 @@ export default function Game3() {
   // Timer logic
   const startTimer = () => {
     clearInterval(timerRef.current);
-    setTimeLeft(60);
+    setTimeLeft(20);
     setScore(0);
     setQuestionsAnswered(0);
 
@@ -166,8 +166,8 @@ export default function Game3() {
           textAlign: "center",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center", // Centering the content vertically
-          height: "100vh", // Ensure full height
+          justifyContent: "center",
+          height: "100vh",
         }}
       >
         <div
@@ -181,7 +181,7 @@ export default function Game3() {
             style={{
               maxWidth: "500px",
               fontSize: "1rem",
-              margin: "0 auto", // Center the text for smaller screens
+              margin: "0 auto",
             }}
           >
             🕹️ Welcome to Scramble!
@@ -192,7 +192,7 @@ export default function Game3() {
             <br />
             You may keep attempting, or <strong>skip</strong> if stuck
             <br />
-            Try your best to win as much in <strong>one</strong> minute
+            Try your best to win as much in <strong>two</strong> minute
             <br />
             Good luck and have fun!
           </p>
@@ -201,7 +201,7 @@ export default function Game3() {
             className="rainbow-button fs-4 px-5 py-3"
             onClick={handleStartGame}
             style={{
-              minWidth: "200px", // Ensures the button is large enough
+              minWidth: "200px",
             }}
           >
             Start Game

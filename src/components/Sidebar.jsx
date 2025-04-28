@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
-import { FaHome, FaPlay, FaUser, FaBars, FaTimes } from "react-icons/fa"; // Added hamburger and close icons
+import { FaHome, FaPlay, FaUser, FaBars, FaTimes } from "react-icons/fa";
 import { useState } from "react";
 
 export default function Sidebar() {
@@ -8,7 +8,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [showConfirm, setShowConfirm] = useState(false);
-  const [isOpen, setIsOpen] = useState(false); // Sidebar open/close for mobile
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -48,7 +48,7 @@ export default function Sidebar() {
       <div
         style={{
           ...sidebarStyles,
-          left: isOpen ? "0" : "-220px", // Slide in/out
+          left: isOpen ? "0" : "-220px",
         }}
       >
         <nav>
@@ -85,7 +85,7 @@ export default function Sidebar() {
         </nav>
 
         {showConfirm && (
-          <div style={confirmationStyles}>
+          <div className="bg-dark" style={confirmationStyles}>
             <p>Are you sure you want to log out?</p>
             <div
               style={{
@@ -202,7 +202,7 @@ const hamburgerButtonStyles = {
   borderRadius: "8px",
   padding: "8px",
   cursor: "pointer",
-  zIndex: 1100, // higher than sidebar
+  zIndex: 1100,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",

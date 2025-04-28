@@ -32,7 +32,7 @@ export default function MainMenu() {
               created_at: score.created_at,
             }))
             .sort((a, b) => b.score - a.score)
-            .slice(0, 5); // Top 5
+            .slice(0, 5);
 
         setQuizScores(formatScores(quizRes, "score", "total"));
         setHangmanScores(
@@ -86,7 +86,7 @@ export default function MainMenu() {
   );
 
   return (
-    <div className="d-flex flex-column flex-md-row min-vh-100 bg-light">
+    <div className="d-flex flex-column flex-md-row min-vh-100 bg-dark">
       <Sidebar />
 
       <Container fluid className="py-4 px-3 px-md-5 flex-grow-1">

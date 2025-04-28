@@ -19,23 +19,28 @@ export const AuthContext = createContext({
   currentUser: null,
   username: "",
   user_email: "",
-  user_id: "", // We will still store user_id in context for reference
+  user_id: "",
 });
 
 // Auth provider component
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [username, setUsername] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [userId, setUserId] = useState(""); // Still store userId for reference
-  const [loading, setLoading] = useState(true); // Added loading state
-  const navigate = useNavigate(); // Add navigate here for navigation
+  const [username, setUsername] = useState(
+    localStorage.getItem("username") || ""
+  );
+  const [userEmail, setUserEmail] = useState(
+    localStorage.getItem("userEmail") || ""
+  );
+  const [userId, setUserId] = useState(localStorage.getItem("userId") || "");
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // Email/password login
   const login = async (email, password) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Firebase automatically triggers the `onAuthStateChanged` after a successful login.
+      navigate("/main");
+      setLoading(false);
     } catch (err) {
       console.error("Login failed:", err);
       throw new Error("Login failed");
@@ -47,13 +52,25 @@ export const AuthProvider = ({ children }) => {
     createUserWithEmailAndPassword(auth, email, password);
 
   // Logout
-  const logout = () => signOut(auth);
+  const logout = async () => {
+    try {
+      await signOut(auth); // Firebase logout
+      localStorage.removeItem("username");
+      localStorage.removeItem("userEmail");
+      localStorage.removeItem("userId");
+    } catch (err) {
+      console.error("Logout failed:", err);
+      throw new Error("Logout failed");
+    }
+  };
 
   // Google login
   const googleLogin = async () => {
     try {
       await signInWithPopup(auth, new GoogleAuthProvider());
+      navigate("/main");
     } catch (err) {
+      console.error("Login failed:", err);
       throw new Error("Google sign-in failed");
     }
   };
@@ -64,11 +81,11 @@ export const AuthProvider = ({ children }) => {
       if (user) {
         try {
           const token = await user.getIdToken();
-          const userEmail = user.email; // Get the user email from Firebase (this is used to refer to the user in the backend)
+          const userEmail = user.email;
 
           // Fetch user profile from the backend using user_email
           const res = await fetch(
-            `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/user_profiles/${userEmail}`, // API now refers to user_email
+            `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/user_profiles/${userEmail}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -78,10 +95,13 @@ export const AuthProvider = ({ children }) => {
 
           if (res.ok) {
             const data = await res.json();
-            console.log(data);
-            setUsername(data.username); // Set username from the response
-            setUserEmail(data.user_email); // Set user_email from the response
-            setUserId(data.id); // Set user_id from the response (from the database)
+            setUsername(data.username);
+            setUserEmail(data.user_email);
+            setUserId(data.id);
+
+            localStorage.setItem("username", data.username);
+            localStorage.setItem("userEmail", data.user_email);
+            localStorage.setItem("userId", data.id);
           } else {
             console.error("Error fetching user profile:", await res.json());
           }
@@ -91,14 +111,23 @@ export const AuthProvider = ({ children }) => {
       } else {
         setUsername("");
         setUserEmail("");
-        setUserId(""); // Clear user_id when logged out
+        setUserId("");
+        localStorage.removeItem("username");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userId");
       }
+
       setCurrentUser(user);
-      setLoading(false); // Stop loading once the user state is set
+
+      setLoading(false);
+
+      if (user && window.location.pathname === "/") {
+        navigate("/main");
+      }
     });
 
     return () => unsubscribe();
-  }, [navigate]); // Add navigate to the dependency array
+  }, [navigate]);
 
   return (
     <AuthContext.Provider
@@ -110,10 +139,11 @@ export const AuthProvider = ({ children }) => {
         googleLogin,
         username,
         userEmail,
-        userId, // Provided user_id in context
+        userId,
       }}
     >
-      {!loading && children} {/* Only render children when loading is done */}
+      {/* Only render the children when loading is done */}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
@@ -123,14 +153,14 @@ export const useAuth = () => useContext(AuthContext);
 
 // ProtectedRoute component
 export const ProtectedRoute = ({ children }) => {
-  const { currentUser } = useAuth();
+  const { currentUser, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (currentUser === null) {
+    if (!loading && currentUser === null) {
       navigate("/"); // Redirect to login if user is not authenticated
     }
-  }, [currentUser, navigate]);
+  }, [currentUser, loading, navigate]);
 
-  return currentUser ? children : null;
+  return !loading && currentUser ? children : null; // Render children only when loading is complete and user is authenticated
 };
