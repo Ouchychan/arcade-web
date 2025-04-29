@@ -4,11 +4,17 @@ import { useAuth } from "../utils/AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Button, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { storage } from "../firebaseConfig";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { v4 as uuidv4 } from "uuid";
 
 export default function ProfilePage() {
   const { currentUser, userId, userEmail } = useAuth();
   const [profile, setProfile] = useState(null);
-  const [newUsername, setNewUsername] = useState("");
+  const [newUsername, setNewUsername] = useState(profile?.username || "");
+  const [newProfileImage, setNewProfileImage] = useState(
+    profile?.profile_image_url || ""
+  );
   const [showEdit, setShowEdit] = useState(false);
 
   const [quizHistory, setQuizHistory] = useState([]);
@@ -184,6 +190,56 @@ export default function ProfilePage() {
     }
   };
 
+  const handleProfileImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const imageRef = ref(storage, `profile_images/${uuidv4()}-${file.name}`);
+
+    try {
+      await uploadBytes(imageRef, file);
+      const downloadURL = await getDownloadURL(imageRef);
+      setNewProfileImage(downloadURL); // Store this URL in your database
+      toast.success("✅ Image uploaded to Firebase!");
+    } catch (err) {
+      console.error("Upload error:", err);
+      toast.error("❌ Failed to upload image.");
+    }
+  };
+
+  const handleUpdateProfile = async () => {
+    const token = await currentUser.getIdToken();
+    const updatedProfile = {
+      username: newUsername,
+      profile_image_url: newProfileImage,
+    };
+
+    try {
+      const res = await fetch(
+        `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/user_profiles/${currentUser.email}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedProfile),
+        }
+      );
+
+      if (res.ok) {
+        setProfile((prev) => ({ ...prev, ...updatedProfile }));
+        toast.success("✅ Profile updated successfully!");
+        setShowEdit(false);
+      } else {
+        toast.error("❌ Failed to update profile.");
+      }
+    } catch (err) {
+      console.error("❌ Error updating profile:", err);
+      toast.error("⚠️ An error occurred while updating.");
+    }
+  };
+
   return (
     <div
       className="d-flex"
@@ -200,12 +256,25 @@ export default function ProfilePage() {
           <p>
             <strong>Email:</strong> {currentUser?.email}
           </p>
+          <p>
+            <strong>Username:</strong> {profile?.username}
+          </p>
+          {profile?.profile_image_url && (
+            <div>
+              <img
+                src={profile.profile_image_url}
+                alt="Profile"
+                style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+              />
+            </div>
+          )}
           <Button variant="outline-primary" onClick={() => setShowEdit(true)}>
-            Change Username
+            Change Profile
           </Button>
+
           <Modal show={showEdit} onHide={() => setShowEdit(false)} centered>
             <Modal.Header closeButton>
-              <Modal.Title>Change Username</Modal.Title>
+              <Modal.Title>Change Profile</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Form>
@@ -217,52 +286,34 @@ export default function ProfilePage() {
                     onChange={(e) => setNewUsername(e.target.value)}
                   />
                 </Form.Group>
+                <Form.Group>
+                  <Form.Label>Profile Image</Form.Label>
+                  <Form.Control
+                    type="file"
+                    onChange={handleProfileImageUpload}
+                    accept="image/*"
+                  />
+                </Form.Group>
+                {newProfileImage && (
+                  <div className="mt-3 text-center">
+                    <img
+                      src={newProfileImage}
+                      alt="New Preview"
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        borderRadius: "50%",
+                      }}
+                    />
+                  </div>
+                )}
               </Form>
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={() => setShowEdit(false)}>
-                Cancel
+                Close
               </Button>
-              <Button
-                variant="primary"
-                onClick={async () => {
-                  try {
-                    const token = await currentUser.getIdToken();
-                    const res = await fetch(
-                      `https://04158105-ba5b-456c-b2b8-8b44449fbfd7-00-3aws21y02db6k.sisko.replit.dev/api/user_profiles/${userEmail}`,
-                      {
-                        method: "PUT",
-                        headers: {
-                          "Content-Type": "application/json",
-                          Authorization: `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({ username: newUsername }),
-                      }
-                    );
-                    if (res.ok) {
-                      const data = await res.json();
-                      toast.success("✅ Username updated!");
-
-                      // Update profile state immediately
-                      setProfile((prev) => ({
-                        ...prev,
-                        username: data.username,
-                      }));
-
-                      // Close the modal
-                      setShowEdit(false);
-                    } else {
-                      const data = await res.json();
-                      toast.error(
-                        `❌ ${data.error || "Failed to update username."}`
-                      );
-                    }
-                  } catch (err) {
-                    console.error("Update error:", err);
-                    toast.error("❌ Error updating profile.");
-                  }
-                }}
-              >
+              <Button variant="primary" onClick={handleUpdateProfile}>
                 Save Changes
               </Button>
             </Modal.Footer>
